@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Drarrow</title>
+    <style>
+      html,
+      body,
+      canvas {
+        padding: 0;
+        margin: 0;
+      }
+    </style>
+  </head>
+  <body style="background-color: #eee">
+    <canvas
+      id="drawing"
+      width="300"
+      height="300"
+      style="border: 1px solid #f00"
+    ></canvas>
+  </body>
+  <script>
+    const drawing = document.getElementById('drawing');
+    const ctx = drawing.getContext('2d', {
+      desynchronized: true,
+    });
+    const { PI, max, min, hypot, atan2, cos, sin } = Math;
+    const PI2 = PI * 2;
+    const arrow = new Path2D();
+    arrow.moveTo(10, 0);
+    arrow.lineTo(-10, -10);
+    arrow.lineTo(-7, 0);
+    arrow.lineTo(-10, 10);
+    arrow.lineTo(10, 0);
+    arrow.closePath();
+
+    let startX, startY, minAngle, maxAngle, angle, radius, x, y;
+
+    const cartesianToPolar = (x, y) => ({
+      radius: hypot(x, y),
+      angle: atan2(y, x),
+    });
+
+    const initCoords = ({ clientX, clientY }) => {
+      startX = clientX;
+      startY = clientY;
+      angle = 0;
+      radius = 0;
+      minAngle = 0;
+      maxAngle = 0;
+      x = 0;
+      y = 0;
+    };
+
+    const recordCoords = ({ clientX, clientY }) => {
+      x = clientX - startX;
+      y = clientY - startY;
+      const polar = cartesianToPolar(x, y);
+      angle = polar.angle;
+      radius = polar.radius;
+
+      if (angle < 0) {
+        angle = PI2 + angle;
+      }
+
+      console.log((angle * (180 / Math.PI)) >> 0, angle);
+      if (radius < 100) {
+        maxAngle = minAngle = angle;
+      } else {
+        maxAngle = max(maxAngle, angle);
+        minAngle = min(minAngle, angle);
+      }
+    };
+
+    const polarToCartesian = (r, a) => ({ x: r * cos(a), y: r * sin(a) });
+
+    const clear = () => {
+      ctx.resetTransform();
+      ctx.fillStyle = '#00ffff';
+      ctx.clearRect(0, 0, drawing.width, drawing.height);
+    };
+
+    const drawTail = (cp2x, cp2y) => {
+      ctx.beginPath();
+      ctx.moveTo(startX, startY);
+      ctx.quadraticCurveTo(
+        startX + cp2x,
+        startY + cp2y,
+        startX + x,
+        startY + y
+      );
+
+      ctx.lineWidth = 4;
+      ctx.strokeStyle = '#00ffff';
+      ctx.stroke();
+      // console.log(startX, startY, startX + x, startY + y);
+    };
+
+    const drawHead = (cp2x, cp2y) => {
+      ctx.translate;
+      ctx.lineWidth = 0;
+      ctx.fillStyle = '#663300';
+      ctx.translate(startX + x, startY + y);
+      ctx.rotate(cartesianToPolar(x - cp2x, y - cp2y).angle);
+      ctx.fill(arrow);
+    };
+
+    const drawCurrent = (e) => {
+      clear();
+
+      const { x: cp2x, y: cp2y } = polarToCartesian(
+        radius / 2,
+        maxAngle - angle > angle - minAngle ? maxAngle : minAngle
+      );
+
+      //* control line
+      ctx.beginPath();
+      ctx.moveTo(startX, startY);
+      ctx.lineTo(startX + cp2x, startY + cp2y);
+      ctx.lineWidth = 1;
+      ctx.strokeStyle = '#0000ff';
+      ctx.stroke();
+      //*/
+
+      //* arrow direction line
+      ctx.beginPath();
+      ctx.moveTo(startX + cp2x, startY + cp2y);
+      ctx.lineTo(startX + x, startY + y);
+      ctx.lineWidth = 1;
+      ctx.strokeStyle = '#ff0000';
+      ctx.stroke();
+      //*/
+
+      console.log(e);
+      drawTail(cp2x, cp2y);
+      drawHead(cp2x, cp2y);
+    };
+
+    const startDrawCurrent = (e) => {
+      initCoords(e);
+      console.log(e);
+    };
+    const endDrawCurrent = (e) => {
+      console.log(e);
+    };
+
+    drawing.addEventListener('mousedown', (e) => {
+      let lastMove = 0;
+
+      const handleMouseMove = (e) => {
+        // const now = Date.now();
+        // if (now - lastMove > 20) {
+        // lastMove = now;
+        recordCoords(e);
+        drawCurrent(e);
+        // }
+      };
+
+      const handleMouseUp = (e) => {
+        window.removeEventListener('mousemove', handleMouseMove);
+        window.removeEventListener('mouseup', handleMouseUp);
+        recordCoords(e);
+        endDrawCurrent(e);
+      };
+
+      window.addEventListener('mousemove', handleMouseMove);
+      window.addEventListener('mouseup', handleMouseUp);
+      recordCoords(e);
+      startDrawCurrent(e);
+    });
+
+    clear();
+
+    window.addEventListener('resize', async () => {
+      // FIXME replace with drawing from history state
+      const { width, height } = drawing;
+      const image = ctx.getImageData(0, 0, width, height);
+
+      drawing.width = window.innerWidth;
+      drawing.height = window.innerHeight;
+
+      await Promise.resolve();
+
+      ctx.putImageData(image, 0, 0);
+    });
+  </script>
+</html>
