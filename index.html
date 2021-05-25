@@ -2,6 +2,29 @@
 <html lang="en">
   <head>
     <title>Drarrow</title>
+    <meta property="og:title" content="DrArrow" />
+    <meta
+      property="og:image"
+      content="https://burdiuz.github.io/drarrow/fb_image.png"
+    />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="600" />
+    <meta
+      property="og:description"
+      content="DrArrow allows creating very simple schemas and diagrams, then export them as images."
+    />
+    <meta property="og:type" content="website" />
+
+    <meta
+      name="keywords"
+      content="drawing, arrow, schema, rectangle, blockschema, diagram, export, image"
+    />
+    <meta
+      name="description"
+      content="DrArrow allows creating very simple schemas and diagrams, then export them as images."
+    />
+    <link rel="icon" type="image/png" sizes="128x128" href="/favicon.png" />
+    <script src="./libs/multibyte-stream.umd.js"></script>
     <style>
       html,
       body,
@@ -9,179 +32,215 @@
         padding: 0;
         margin: 0;
       }
+
+      body, textarea {
+        font-family: Arial, Helvetica, sans-serif;
+      }
+
+      textarea {
+        font-size: 1rem;
+      }
+
+      canvas {
+        position: absolute;
+        top: 0;
+        left: 0;
+      }
+
+      button {
+        background: #eee;
+        border: 1px solid #999;
+        padding: 5px 10px;
+        border-radius: 4px;
+        margin-left: 5px;
+        font-size: 1rem;
+        cursor: pointer;
+      }
+
+      .panel {
+        position: absolute;
+        top: 0;
+        left: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+        width: 50px;
+        padding: 5px;
+        background-color: #eee;
+        border-color: #999;
+        border-style: solid;
+        border-width: 0px;
+        border-right-width: 1px;
+        border-bottom-width: 1px;
+        border-bottom-right-radius: 5px;
+        max-height: 100vh;
+        overflow-y: auto;
+      }
+
+      .panel-btn {
+        cursor: pointer;
+        border-radius: 5px;
+        border: 1px solid #ccc;
+        height: 40px;
+        background-repeat: no-repeat;
+        background-position: center;
+      }
+
+      .panel-btn:hover,
+      .selected-btn {
+        border: 1px solid #999;
+      }
+
+      .panel-btn:not(:last-child) {
+        margin-bottom: 4px;
+      }
+
+      .color-btn {
+      }
+
+      .share-btn {
+        background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABkAAAAZCAYAAADE6YVjAAACIklEQVRIS72Vu4sTURTGzzcJFklsxRULQcE/wUe1+yeI2mUFnc25dxAfYGUhWlhYWYhhOJcEdrUQLCxEUEFwEdQtVLCwEhXF1QW7rdyEmSMTYshjksmG0WnPOd/vPr77Deg/fJiV0Ww2D7ZarTnP814aY9qTdGaGOOeeq+o8ET0pFou+7/s/xoFmhoiI9om+VVXfWvs+DZQXJNH+BsBn5mfDoDwhifZvz/PO1Gq1e/2gqSD1er1SKpUqURRV2u32TlWtFAqFFxMu+4Ix5tbfeirEOXdUVU8Q0WEiOjKLAwFcZ+YryewAJAzDeQDnARybRThlRowxtgcJw/Ca53lXcxLvyQBY7kCcc1ZVw7wBnaMCPqDRaByIoujjvwAQ0WsiWoRz7pyq9pyQI+xhuVxerFarmxCRV5McpKqbANYAbKjqBoCvcRx/BvB4bIwATWZe6llYRL4Q0b6UgU8ALjLzozSxoVjpb7lhjLk88BhFZIuIdgwJrRtj9k46ujSIql6y1t4ciRUR+UlEu/sLqnrcWvtgG5AtADVmvpsakCKyRkSH+oqZu+jafl1V9xDRdwBLzPx07B0NP0IAq8y8kOWyxJVEtF9V7xhj3k3qT9w1B+BNd1XJ45kKkrWIkRQWkbNEdLtb+GWM2bUdkazeXnY551ZU9VQyEMfxQhAEq1nD09YHUlhE7hPRyTiOTwdBsDytSFbfyP8kifs8d9EJyaxV5FH/A+gW1BcfjFdEAAAAAElFTkSuQmCC');
+      }
+
+      .download-btn {
+        background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABkAAAAZCAYAAADE6YVjAAAB3klEQVRIS+2VP4gUMRTGv5fYWFlZWdkoiJWCiIoogmBjsTeFrbCTyXrXaSloYamVrJtktrAUXBVsBEFcD06OA61E0OYqqyvEyirvyZzjsezt/BMb4aYKyZfv95LJe4/Q4nPO9Yjo2byUma8PBoPHTRbUJCjWR6PRXaXUnXktEU2NMRebPPYg2ze0d10LH8r/+bpCCGdijJfnj1SVJzHGd7NarfVrY8z72bldeeK9fwhgpSnBqtZF5IW1tlcLGY/Hx2OMEwBH/wL0RWud9Pv9T7WQYtF7fwJAATrcAbQJIMmy7OOu8lNlkuf5aWYuQIdagL4ppZI0TdcXaWtrl3PuvFJqIiIHq0BEtMXMibV2tVLTFKVz7lJZ5g8s0P4QkSVr7Zs6n1ZVOIRwRUSKfrJ/xuwnES0ZY141BUrOuaFS6ljNk1zLsux2COGqiDwHoAFEIuoZY1567+8R0dmq/cz8mbz30hgJ0SNjzLJzLlFKLTPz0Fo7CSEMReRG4/42kNLkiVLqfpqmH/I8P8nMtwBcawJst4QOkJ0eIiIX2pj/0XSGVJh/LeePANgC8B1AMf4dWNeTLEw2olPFvIhMmfmc1nqfiGz8UwiAB6XhTQBPy5OYHUgI4W3XO+70P4imvwDRqdfAHkxvvAAAAABJRU5ErkJggg==');
+      }
+
+      .modal-container {
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: #00000033;
+      }
+
+      .modal {
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+        min-width: 30vw;
+        min-height: 30vh;
+        padding: 5px;
+        background-color: #ffffff;
+        border-radius: 5px;
+        box-shadow: 2px 2px 10px #00000066;
+      }
+
+      .modal-header {
+        font-size: 1.6rem;
+        padding-bottom: 5px;
+        border-bottom: 1px solid #eee;
+      }
+
+      .modal-content {
+        flex: 1;
+      }
+
+      .modal-footer {
+        text-align: right;
+        padding-top: 5px;
+        border-top: 1px solid #eee;
+      }
+
+      .hidden {
+        display: none;
+      }
     </style>
   </head>
-  <body style="background-color: #eee">
-    <canvas
-      id="drawing"
-      width="300"
-      height="300"
-      style="border: 1px solid #f00"
-    ></canvas>
+  <body>
+    <canvas id="canvas" width="300" height="300"></canvas>
+    <canvas id="drawing" width="300" height="300"></canvas>
+    <div class="panel">
+      <div
+        class="panel-btn color-btn"
+        data-color="#000000"
+        style="background-color: #000000"
+      ></div>
+      <div
+        class="panel-btn color-btn"
+        data-color="#ecc25f"
+        style="background-color: #ecc25f"
+      ></div>
+      <div
+        class="panel-btn color-btn"
+        data-color="#5d7a8a"
+        style="background-color: #5d7a8a"
+      ></div>
+      <div
+        class="panel-btn color-btn"
+        data-color="#cdc6cd"
+        style="background-color: #cdc6cd"
+      ></div>
+      <div
+        class="panel-btn color-btn"
+        data-color="#db6161"
+        style="background-color: #db6161"
+      ></div>
+      <div
+        class="panel-btn color-btn"
+        data-color="#ffd3b6"
+        style="background-color: #ffd3b6"
+      ></div>
+      <div
+        class="panel-btn color-btn"
+        data-color="#cbe453"
+        style="background-color: #cbe453"
+      ></div>
+      <div
+        class="panel-btn color-btn"
+        data-color="#6cc15a"
+        style="background-color: #6cc15a"
+      ></div>
+      <div
+        class="panel-btn color-btn"
+        data-color="#90e7df"
+        style="background-color: #90e7df"
+      ></div>
+      <div
+        class="panel-btn color-btn"
+        data-color="#48bfea"
+        style="background-color: #48bfea"
+      ></div>
+      <div
+        class="panel-btn color-btn"
+        data-color="#ff8feb"
+        style="background-color: #ff8feb"
+      ></div>
+      <div
+        class="panel-btn color-btn"
+        data-color="#ff50c9"
+        style="background-color: #ff50c9"
+      ></div>
+      <div class="panel-btn share-btn"></div>
+      <div class="panel-btn download-btn"></div>
+    </div>
+    <div class="modal-container hidden"></div>
+    <template id="share-modal">
+      <div class="modal">
+        <div class="modal-header">Share DrArrow Diagram URL</div>
+        <div class="modal-content"></div>
+        <div class="modal-footer">
+          <button class="apply-btn">Apply</button
+          ><button class="close-btn">Close</button>
+        </div>
+      </div>
+    </template>
+    <template id="rect-caption-modal">
+      <div class="modal">
+        <div class="modal-header">Area Caption</div>
+        <textarea class="modal-content"> </textarea>
+        <div class="modal-footer">
+          <button class="apply-btn">Apply</button
+          ><button class="close-btn">Close</button>
+        </div>
+      </div>
+    </template>
   </body>
-  <script>
-    const drawing = document.getElementById('drawing');
-    const ctx = drawing.getContext('2d', {
-      desynchronized: true,
-    });
-    const { PI, max, min, hypot, atan2, cos, sin } = Math;
-    const PI2 = PI * 2;
-    const arrow = new Path2D();
-    arrow.moveTo(10, 0);
-    arrow.lineTo(-10, -10);
-    arrow.lineTo(-7, 0);
-    arrow.lineTo(-10, 10);
-    arrow.lineTo(10, 0);
-    arrow.closePath();
-
-    let startX, startY, minAngle, maxAngle, angle, radius, x, y;
-
-    const cartesianToPolar = (x, y) => ({
-      radius: hypot(x, y),
-      angle: atan2(y, x),
-    });
-
-    const initCoords = ({ clientX, clientY }) => {
-      startX = clientX;
-      startY = clientY;
-      angle = 0;
-      radius = 0;
-      minAngle = 0;
-      maxAngle = 0;
-      x = 0;
-      y = 0;
-    };
-
-    const recordCoords = ({ clientX, clientY }) => {
-      x = clientX - startX;
-      y = clientY - startY;
-      const polar = cartesianToPolar(x, y);
-      angle = polar.angle;
-      radius = polar.radius;
-
-      if (angle < 0) {
-        angle = PI2 + angle;
-      }
-
-      console.log((angle * (180 / Math.PI)) >> 0, angle);
-      if (radius < 100) {
-        maxAngle = minAngle = angle;
-      } else {
-        maxAngle = max(maxAngle, angle);
-        minAngle = min(minAngle, angle);
-      }
-    };
-
-    const polarToCartesian = (r, a) => ({ x: r * cos(a), y: r * sin(a) });
-
-    const clear = () => {
-      ctx.resetTransform();
-      ctx.fillStyle = '#00ffff';
-      ctx.clearRect(0, 0, drawing.width, drawing.height);
-    };
-
-    const drawTail = (cp2x, cp2y) => {
-      ctx.beginPath();
-      ctx.moveTo(startX, startY);
-      ctx.quadraticCurveTo(
-        startX + cp2x,
-        startY + cp2y,
-        startX + x,
-        startY + y
-      );
-
-      ctx.lineWidth = 4;
-      ctx.strokeStyle = '#00ffff';
-      ctx.stroke();
-      // console.log(startX, startY, startX + x, startY + y);
-    };
-
-    const drawHead = (cp2x, cp2y) => {
-      ctx.translate;
-      ctx.lineWidth = 0;
-      ctx.fillStyle = '#663300';
-      ctx.translate(startX + x, startY + y);
-      ctx.rotate(cartesianToPolar(x - cp2x, y - cp2y).angle);
-      ctx.fill(arrow);
-    };
-
-    const drawCurrent = (e) => {
-      clear();
-
-      const { x: cp2x, y: cp2y } = polarToCartesian(
-        radius / 2,
-        maxAngle - angle > angle - minAngle ? maxAngle : minAngle
-      );
-
-      //* control line
-      ctx.beginPath();
-      ctx.moveTo(startX, startY);
-      ctx.lineTo(startX + cp2x, startY + cp2y);
-      ctx.lineWidth = 1;
-      ctx.strokeStyle = '#0000ff';
-      ctx.stroke();
-      //*/
-
-      //* arrow direction line
-      ctx.beginPath();
-      ctx.moveTo(startX + cp2x, startY + cp2y);
-      ctx.lineTo(startX + x, startY + y);
-      ctx.lineWidth = 1;
-      ctx.strokeStyle = '#ff0000';
-      ctx.stroke();
-      //*/
-
-      console.log(e);
-      drawTail(cp2x, cp2y);
-      drawHead(cp2x, cp2y);
-    };
-
-    const startDrawCurrent = (e) => {
-      initCoords(e);
-      console.log(e);
-    };
-    const endDrawCurrent = (e) => {
-      console.log(e);
-    };
-
-    drawing.addEventListener('mousedown', (e) => {
-      let lastMove = 0;
-
-      const handleMouseMove = (e) => {
-        // const now = Date.now();
-        // if (now - lastMove > 20) {
-        // lastMove = now;
-        recordCoords(e);
-        drawCurrent(e);
-        // }
-      };
-
-      const handleMouseUp = (e) => {
-        window.removeEventListener('mousemove', handleMouseMove);
-        window.removeEventListener('mouseup', handleMouseUp);
-        recordCoords(e);
-        endDrawCurrent(e);
-      };
-
-      window.addEventListener('mousemove', handleMouseMove);
-      window.addEventListener('mouseup', handleMouseUp);
-      recordCoords(e);
-      startDrawCurrent(e);
-    });
-
-    clear();
-
-    window.addEventListener('resize', async () => {
-      // FIXME replace with drawing from history state
-      const { width, height } = drawing;
-      const image = ctx.getImageData(0, 0, width, height);
-
-      drawing.width = window.innerWidth;
-      drawing.height = window.innerHeight;
-
-      await Promise.resolve();
-
-      ctx.putImageData(image, 0, 0);
-    });
-  </script>
+  <script src="src/index.js" type="module"></script>
 </html>
