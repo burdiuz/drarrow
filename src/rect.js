@@ -55,6 +55,17 @@ const drawRectArea = (ctx, shape) => {
 
 const LINE_SPACE_MULTIPLIER = 1;
 
+const makeDarker = (colorStr, dm = 0.3) => {
+  const src = Number.parseInt(`0x${colorStr.substr(1)}`, 16);
+
+  const darker =
+    ((((src >>> 16) & 0xff) * dm) << 16) |
+    ((((src >>> 8) & 0xff) * dm) << 8) |
+    (((src & 0xff) * dm) >> 0);
+
+  return `#${darker.toString(16).padStart(6, '0')}`;
+};
+
 const drawRectText = (ctx, shape) => {
   const { startX, startY, x: rectW, y: rectH, text, color } = shape;
 
@@ -62,7 +73,7 @@ const drawRectText = (ctx, shape) => {
     return;
   }
 
-  ctx.fillStyle = color;
+  ctx.fillStyle = makeDarker(color);
   ctx.font = '1.5rem Arial, Helvetica, sans-serif';
 
   const { actualBoundingBoxAscent: asc, actualBoundingBoxDescent: desc } =
