@@ -1,4 +1,4 @@
-const { hypot, atan2, cos, sin } = Math;
+const { hypot, atan2, cos, sin, abs } = Math;
 
 export const Type = {
   ARROW: 0,
@@ -28,3 +28,5 @@ export const clearCanvas = (canvas, ctx) => {
   ctx.resetTransform();
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 };
+
+export const isValidShape = ({ x, y }) => abs(x) > 5 || abs(y) > 5;

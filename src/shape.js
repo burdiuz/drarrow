@@ -21,8 +21,9 @@ let shape;
 
 export const getShape = () => shape;
 
+export const hasShape = () => !!shape;
+
 export const setShape = (value) => {
-  console.log(value);
   shape = value;
 };
 
@@ -54,8 +55,6 @@ export const recordCoords = ({ clientX, clientY }) => {
   if (angle < 0) {
     angle = PI2 + angle;
   }
-
-  console.log((angle * (180 / PI)) >> 0, angle);
 
   if (radius < 100) {
     maxAngle = minAngle = angle;

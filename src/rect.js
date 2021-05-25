@@ -1,8 +1,8 @@
-import { addToState } from './state.js';
-import { getShape, setShape } from './shape.js';
+import { getShape } from './shape.js';
 import { showRectCaptionModal, hideModal } from './modal.js';
+import { isValidShape } from './utils.js';
 
-const { max, min, PI } = Math;
+const { ceil, max, min, PI } = Math;
 
 const R = 10;
 const R2 = R * 2;
@@ -11,8 +11,8 @@ const AR = 0;
 const AB = PI * 0.5;
 const AL = PI;
 
-export const drawRect = (ctx, e) => {
-  const { startX, startY, x, y, color } = getShape();
+const drawRectArea = (ctx, shape) => {
+  const { startX, startY, x, y, color } = shape;
   let x1, y1, x2, y2;
 
   if (x >= 0) {
@@ -53,18 +53,84 @@ export const drawRect = (ctx, e) => {
   ctx.stroke();
 };
 
-export const startDrawRect = (ctx, e) => {};
+const LINE_SPACE_MULTIPLIER = 1;
 
-export const endDrawRect = (ctx, e, done) => {
+const drawRectText = (ctx, shape) => {
+  const { startX, startY, x: rectW, y: rectH, text, color } = shape;
+
+  if (!text) {
+    return;
+  }
+
+  ctx.fillStyle = color;
+  ctx.font = '1.5rem Arial, Helvetica, sans-serif';
+
+  const { actualBoundingBoxAscent: asc, actualBoundingBoxDescent: desc } =
+    ctx.measureText('|');
+
+  const lineHeight = ceil(desc + asc);
+
+  const lines = text.split('\n');
+  const { length } = lines;
+  let textW = 0;
+  let textH = lineHeight * length * LINE_SPACE_MULTIPLIER;
+
+  const widths = lines.map((line) => {
+    const { width } = ctx.measureText(line);
+
+    textW = max(textW, width);
+
+    return width;
+  });
+
+  const x = startX + (rectW - textW) * 0.5;
+  let y = startY + (rectH - textH) * 0.5;
+
+  lines.forEach((line, index) => {
+    const width = widths[index];
+
+    ctx.fillText(line, x + (textW - width) * 0.5, y);
+
+    y += lineHeight * LINE_SPACE_MULTIPLIER;
+  });
+};
+
+export const drawRectFor = (ctx, shape) => {
+  drawRectArea(ctx, shape);
+  drawRectText(ctx, shape);
+};
+
+export const drawCurrentRect = (ctx) => {
+  const shape = getShape();
+  drawRectFor(ctx, shape);
+};
+
+export const startDrawCurrentRect = (ctx) => {};
+
+export const endDrawCurrentRect = (ctx, done) => {
+  if (!isValidShape(getShape())) {
+    done(null);
+    return;
+  }
+
   const q = showRectCaptionModal();
+  q().addEventListener('close', (e) => {
+    const {
+      detail: { forced },
+    } = e;
+    if (forced) {
+      done(getShape());
+    }
+  });
+
   q('.close-btn').addEventListener('click', () => {
     hideModal();
-    done();
+    done(getShape());
   });
+
   q('.apply-btn').addEventListener('click', () => {
-    const text = q('.modal-content').value;
-    setShape({ ...getShape(), text });
+    const text = q('.modal-content').value.trim();
     hideModal();
-    done();
+    done({ ...getShape(), text });
   });
 };

@@ -6,11 +6,17 @@ export const showModal = (template) => {
   container.appendChild(content);
   container.classList.remove('hidden');
 
-  return (selector) => document.querySelector(`.modal-container ${selector}`);
+  return (selector = '') =>
+    document.querySelector(`.modal-container .modal ${selector}`);
 };
 
-export const hideModal = () => {
+export const hideModal = (detail = {}) => {
   const container = document.querySelector('.modal-container');
+
+  const modal = container.querySelector('.modal');
+  if (modal) {
+    modal.dispatchEvent(new CustomEvent('close', { detail }));
+  }
 
   container.innerHTML = '';
   container.classList.add('hidden');
