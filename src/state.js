@@ -43,6 +43,7 @@ let state = [];
 
 export const initState = () => {
   state = [];
+  currentStateStr = exportState();
 };
 
 export const getState = () => state;
@@ -61,13 +62,14 @@ export const exportState = () =>
   });
 
 export const importState = (base64String) => {
-  const { items = [] } = base64String ? stateSchema.loadBase64To(base64String) || {} : {};
+  const { items = [] } = base64String
+    ? stateSchema.loadBase64To(base64String) || {}
+    : {};
   state = items.map((item) => ({ ...item, color: intToColor(item.color) }));
   currentStateStr = base64String;
 };
 
 export const saveStateToURL = () => {
-  console.log('SAVE!', currentStateStr);
   window.history.pushState(
     Date.now(),
     '',

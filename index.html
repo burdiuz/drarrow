@@ -2,6 +2,7 @@
 <html lang="en">
   <head>
     <title>Drarrow</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta property="og:title" content="DrArrow" />
     <meta
       property="og:image"
@@ -23,7 +24,8 @@
       name="description"
       content="DrArrow allows creating very simple schemas and diagrams, then export them as images."
     />
-    <link rel="icon" type="image/png" sizes="128x128" href="/favicon.png" />
+    <link rel="icon" type="image/png" sizes="96x96" href="/favicon.png" />
+    <link rel="shortcut icon" type="image/png" sizes="96x96" href="/favicon.png" />
     <script src="./libs/multibyte-stream.umd.js"></script>
     <style>
       html,
@@ -34,12 +36,19 @@
         font-size: 16px;
       }
 
-      body, textarea {
+      body,
+      textarea {
         font-family: Arial, Helvetica, sans-serif;
       }
 
       textarea {
         font-size: 1rem;
+      }
+
+      html,
+      body {
+        width: 100%;
+        height: 100%;
       }
 
       canvas {
@@ -105,6 +114,22 @@
 
       .download-btn {
         background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABkAAAAZCAYAAADE6YVjAAAB3klEQVRIS+2VP4gUMRTGv5fYWFlZWdkoiJWCiIoogmBjsTeFrbCTyXrXaSloYamVrJtktrAUXBVsBEFcD06OA61E0OYqqyvEyirvyZzjsezt/BMb4aYKyZfv95LJe4/Q4nPO9Yjo2byUma8PBoPHTRbUJCjWR6PRXaXUnXktEU2NMRebPPYg2ze0d10LH8r/+bpCCGdijJfnj1SVJzHGd7NarfVrY8z72bldeeK9fwhgpSnBqtZF5IW1tlcLGY/Hx2OMEwBH/wL0RWud9Pv9T7WQYtF7fwJAATrcAbQJIMmy7OOu8lNlkuf5aWYuQIdagL4ppZI0TdcXaWtrl3PuvFJqIiIHq0BEtMXMibV2tVLTFKVz7lJZ5g8s0P4QkSVr7Zs6n1ZVOIRwRUSKfrJ/xuwnES0ZY141BUrOuaFS6ljNk1zLsux2COGqiDwHoAFEIuoZY1567+8R0dmq/cz8mbz30hgJ0SNjzLJzLlFKLTPz0Fo7CSEMReRG4/42kNLkiVLqfpqmH/I8P8nMtwBcawJst4QOkJ0eIiIX2pj/0XSGVJh/LeePANgC8B1AMf4dWNeTLEw2olPFvIhMmfmc1nqfiGz8UwiAB6XhTQBPy5OYHUgI4W3XO+70P4imvwDRqdfAHkxvvAAAAABJRU5ErkJggg==');
+      }
+
+      .expand-btn {
+        background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABkAAAAZCAYAAADE6YVjAAABiUlEQVRIS72WsU7FIBSGCww1vocx0c3BJ/HeRQe7QBl8BntfQYcWlrq4qI9i4qSj8QVcjUnDwdCEBrlQqr3p3XoPnA/Of34AZQv8kGUIIVYAcGy/McYaAEz8g3N+F1uLlPJcKXXgzyOEfFJKb83/PURKeaW1voklAoATzvmLH2+a5ggh9DpSjDVj7LGH1HVdYYyvQ4NNEq31KWPsy4+3bbvXdd2z1nqogDsGADac82oUYgAAsC7L8i22WrMbjPFDCDQJYgeleiNWiUkQkzwFGit1FGJKpJR6cjWKgXyAGUcIObOl8yGXGOPW1SCwwooxtrGlCwGMyK5GCKELSun94BMTzPP8vSiK71SiGMDx3D4AHNq2HyAxcUMJp5TSzZeEjPko1RQWNAkSAk0FDMfKXB+k5id3slNN5nRXlmW/2lsIsd1ddV0nfeJrEPNR1CfuhDmONztCCK1ijo8e9aku+tfZFboPUt0z6xRe5D7pjbSrm3GRO96s2H+tODr86bVi5229VlLCzo3/AIlZtCkRgI/pAAAAAElFTkSuQmCC');
+      }
+
+      .collapse-btn {
+        background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABkAAAAZCAYAAADE6YVjAAACXElEQVRIS92WP4wSURDGv3lslkB1ra12mthYaqeddgKN3Bma3YVElEYTG8/GRBsUE2BpyP2xEezOzuu8ksZEO21tr4Kw2d0xQ3Y3j3O54yBeIQ3Je/Pm9+abeTNLAOC67kdmJs/zyvV6fSpr6/xarVbWNM19ImLbtkskAABFccrMB5PJZLPRaByvCmk2mxu5XG6PiO5FPgbU7XYHRFTQnH4BsGXb9u/zglzXvQRgF8Cd+CwzDykKbaiRZf9rEAQPa7Xar263e1UpZQH4aVnW+/hwr9d7BOBKGIY9x3F+tNvty5lMZgfALQ1w4HlegWRBQszn8wP9BgBGzLyllJJ8XRM727Zn9lEeWf6J6HsYhiUikghu6IqMx+OiSK8fklAlP8lNxEEMWASJQbqdKAGgFEueQMQ4CllA+o2Sy6VFkpK3URAEJZE63puDyGKUg0Qi3clZkFg6yZF+bg5yGuA0ueYcRjnSQSch8oAeLCrdsyLRquqD4zjlVLmkLJm5lQYJw/BltVrdjvc6nc62UupFmi0R1fVy/ysn532Ay9j/pxDXdZ8CeL1uTgA8s237zaLEv2Xmx+tWFxG9syzrSSrkQt7Jhbx46V2GYUhLWbl3EdHI9/303iUDh4gGzHwz0XLFLkxER8xcnOvC/X5/w/O8IYDbGmAUhuHS80QptXtCgUPTNAuVSuV4Nhmz2ewnAHc1wJHv+1vxZATwnIi+6WUp5c7M1wG8iiejYRgCSpQA8Hk6nd5Pm/GHADbXmPF7uiKzGa9/rQjZNM2yhLhMT0qziaTf15QZzHrXv/7u+gOMvYdzZH7lMQAAAABJRU5ErkJggg==');
+      }
+
+      .clear-btn {
+        background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABkAAAAZCAYAAADE6YVjAAABJUlEQVRIS+1WsU7EMAy12984voLtFmDiC2BnaKyMIAY2YLqFvXKzMMMX3AQsbPwDEvxGbeRKOYXSu16pdAw0m+OX91zHdoqwxWLmBwA46YA+EtFpHwVGQFmWN13gPM8PVPVwHREiPtd1/dLl9943nI2ICWRZdt0X0VC/iNya0O5EQgj7qno3NNI+PCJeFkXxtrqTvgNj/N9Eqqp6GkOWnnXOHUX7h8imShoSABGtuP9exErQok/L2/badhtj9tZfYsC0h6zxLNd2dzGtsReYWdN0TiIwpWtjn0zV9U+bUVXnqnqczKpPItpj5g8AmFlabKwg4hIRX381VoaM9jZ27exi5isAWIwhb/5OEO+dc2edj1YIYSYiFwBwPkKoEpGF9/49cnwBeQmnKSNkyREAAAAASUVORK5CYII=');
+      }
+
+      .info-btn {
+        background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABkAAAAZCAYAAADE6YVjAAABHUlEQVRIS+2VMU7DQBBFZ+YQ6ZBS0yYN0IRb0CJkz1oCLkIHSN61hWi5BTRJmqSljkTHIWbQSk4Teb0rtERRxLb+/s+e0f+LkHistTdEdK2qF4g4F5FXY8xLyuuYIqrrekZE77taEbmsquoj5pEEcc4tAOCsx2zJzOe5IBoyYuboh0YF3tw5twKASQ9ozczTXH9yCwBPPWZ3zPycBeJNmqa5UtX7bjdLRHwsy/ItBvDPk8aVYjSkOQyID6Gqnux+KSJ+ZQljKIRbYJYwHg/Ej8Va+0BEU1Wd/Wl37aUg/yHbHSYl/jjGZa09VdVR6PpFxG9jzOevC7Jt24mI+Atr8PgcFUWxDokGdxKrldQOOwjIuNvFeGBem66NNyHND8uKuBpwY1heAAAAAElFTkSuQmCC');
       }
 
       .modal-container {
@@ -220,6 +245,9 @@
       ></div>
       <div class="panel-btn share-btn"></div>
       <div class="panel-btn download-btn"></div>
+      <div class="panel-btn fullscreen-btn expand-btn"></div>
+      <div class="panel-btn clear-btn" style="margin-top: 40px"></div>
+      <div class="panel-btn info-btn"></div>
     </div>
     <div class="modal-container hidden"></div>
     <template id="share-modal">
@@ -235,10 +263,19 @@
     <template id="rect-caption-modal">
       <div class="modal">
         <div class="modal-header">Area Caption</div>
-        <textarea class="modal-content"> </textarea>
+        <textarea class="modal-content"></textarea>
         <div class="modal-footer">
           <button class="apply-btn">Apply</button
           ><button class="close-btn">Close</button>
+        </div>
+      </div>
+    </template>
+    <template id="message-modal">
+      <div class="modal" style="min-height: 120px">
+        <div class="modal-header"></div>
+        <div class="modal-content"></div>
+        <div class="modal-footer">
+          <button class="close-btn">Close</button>
         </div>
       </div>
     </template>

@@ -25,8 +25,18 @@ export const hideModal = (detail = {}) => {
 export const Modal = {
   SHARE_MODAL: 'share-modal',
   RECT_CAPTION_MODAL: 'rect-caption-modal',
+  MESSAGE_MODAL: 'message-modal',
 };
 
 export const showShareModal = () => showModal(Modal.SHARE_MODAL);
 
 export const showRectCaptionModal = () => showModal(Modal.RECT_CAPTION_MODAL);
+
+export const showMessageModal = (message, caption = 'DrArrow') => {
+  const q = showModal(Modal.MESSAGE_MODAL);
+
+  q('.modal-header').innerText = caption;
+  q('.modal-content').innerText = message;
+
+  return q;
+};

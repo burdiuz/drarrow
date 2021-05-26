@@ -23,14 +23,19 @@ export const cartesianToPolar = (x, y) => ({
 
 export const polarToCartesian = (r, a) => ({ x: r * cos(a), y: r * sin(a) });
 
-export const clearCanvas = (canvas, ctx) => {
+export const clearCanvas = (canvas, ctx, opaque = true) => {
   ctx = ctx || canvas.getContext('2d');
   ctx.resetTransform();
   ctx.clearRect(0, 0, canvas.width, canvas.height);
+  if (opaque) {
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+  }
 };
 
 export const isValidShape = ({ x, y }) => abs(x) > 5 || abs(y) > 5;
 
-export const colorToInt = (color) => color ? Number.parseInt(`0x${color.substr(1)}`, 16) || 0 : 0;
+export const colorToInt = (color) =>
+  color ? Number.parseInt(`0x${color.substr(1)}`, 16) || 0 : 0;
 
 export const intToColor = (val) => `#${val.toString(16).padStart(6, '0')}`;
