@@ -119,6 +119,40 @@ drawing.addEventListener('mousedown', (e) => {
   });
 });
 
+const convertTouchEvent = ({ touches: [{ clientX, clientY }] }) => ({
+  clientX,
+  clientY,
+});
+
+drawing.addEventListener('touchstart', (e) => {
+  let lastEvent = convertTouchEvent(e);
+
+  const handleTouchMove = (e) => {
+    lastEvent = convertTouchEvent(e);
+    clearCanvas(drawing, drawingCtx, false);
+    drawShape(drawingCtx, lastEvent);
+  };
+
+  const handleTouchEnd = (e) => {
+    window.removeEventListener('touchmove', handleTouchMove);
+    window.removeEventListener('touchend', handleTouchEnd);
+    window.removeEventListener('touchcancel', handleTouchEnd);
+
+    endDrawShape(drawingCtx, lastEvent);
+    clearCanvas(drawing, drawingCtx, false);
+  };
+
+  window.addEventListener('touchmove', handleTouchMove);
+  window.addEventListener('touchend', handleTouchEnd);
+  window.addEventListener('touchcancel', handleTouchEnd);
+
+  clearCanvas(drawing, drawingCtx, false);
+  startDrawShape(drawingCtx, lastEvent, {
+    color,
+    type: Date.now() - lastClickTime < 200 ? Type.RECT : Type.ARROW,
+  });
+});
+
 drawing.addEventListener('click', () => {
   lastClickTime = Date.now();
 });
