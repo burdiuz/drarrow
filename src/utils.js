@@ -30,3 +30,7 @@ export const clearCanvas = (canvas, ctx) => {
 };
 
 export const isValidShape = ({ x, y }) => abs(x) > 5 || abs(y) > 5;
+
+export const colorToInt = (color) => color ? Number.parseInt(`0x${color.substr(1)}`, 16) || 0 : 0;
+
+export const intToColor = (val) => `#${val.toString(16).padStart(6, '0')}`;

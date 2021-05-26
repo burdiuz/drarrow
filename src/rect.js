@@ -1,6 +1,6 @@
 import { getShape } from './shape.js';
 import { showRectCaptionModal, hideModal } from './modal.js';
-import { isValidShape } from './utils.js';
+import { isValidShape, intToColor, colorToInt } from './utils.js';
 
 const { ceil, max, min, PI } = Math;
 
@@ -56,14 +56,14 @@ const drawRectArea = (ctx, shape) => {
 const LINE_SPACE_MULTIPLIER = 1;
 
 const makeDarker = (colorStr, dm = 0.3) => {
-  const src = Number.parseInt(`0x${colorStr.substr(1)}`, 16);
+  const src = colorToInt(colorStr);
 
   const darker =
     ((((src >>> 16) & 0xff) * dm) << 16) |
     ((((src >>> 8) & 0xff) * dm) << 8) |
     (((src & 0xff) * dm) >> 0);
 
-  return `#${darker.toString(16).padStart(6, '0')}`;
+  return intToColor(darker);
 };
 
 const drawRectText = (ctx, shape) => {

@@ -12,7 +12,7 @@ import {
 } from './rect.js';
 import { Type, clearCanvas, isValidShape } from './utils.js';
 import { getShape, resetShape, initShape, recordCoords } from './shape.js';
-import { addToState, getState } from './state.js';
+import { addToState, getState, saveStateToURL } from './state.js';
 
 const { abs } = Math;
 
@@ -76,6 +76,7 @@ export const endDrawShape = (ctx, e) => {
   endDrawCurrentTypes[type](ctx, (shape) => {
     if (shape && isValidShape(shape)) {
       addToState(shape);
+      saveStateToURL();
     }
 
     resetShape();

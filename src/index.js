@@ -7,6 +7,7 @@ import {
   drawCurrentShape,
 } from './core.js';
 import { hasShape } from './shape.js';
+import { loadStateFromURL } from './state.js';
 import { clearCanvas, Type } from './utils.js';
 import { hideModal } from './modal.js';
 
@@ -31,7 +32,9 @@ drawing.addEventListener('mousedown', (e) => {
   const handleMouseUp = (e) => {
     window.removeEventListener('mousemove', handleMouseMove);
     window.removeEventListener('mouseup', handleMouseUp);
+
     endDrawShape(drawingCtx, e);
+    clearCanvas(drawing, drawingCtx);
   };
 
   window.addEventListener('mousemove', handleMouseMove);
@@ -49,8 +52,6 @@ drawing.addEventListener('click', () => {
 });
 
 const resize = async () => {
-  // FIXME replace with drawing from history state
-  const { width, height } = canvas;
   const newSize = { width: window.innerWidth, height: window.innerHeight };
 
   Object.assign(canvas, newSize);
@@ -91,5 +92,11 @@ window.addEventListener('keyup', (e) => {
   }
 });
 
+window.addEventListener('popstate', () => {
+  loadStateFromURL();
+  redrawState();
+});
+
 setStateCanvas(canvas);
+loadStateFromURL();
 resize();
