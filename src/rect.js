@@ -79,12 +79,12 @@ const drawRectText = (ctx, shape) => {
   const { actualBoundingBoxAscent: asc, actualBoundingBoxDescent: desc } =
     ctx.measureText('|');
 
-  const lineHeight = ceil(desc + asc);
+  const lineHeight = ceil(desc + asc) * LINE_SPACE_MULTIPLIER;
 
   const lines = text.split('\n');
   const { length } = lines;
   let textW = 0;
-  let textH = lineHeight * length * LINE_SPACE_MULTIPLIER;
+  let textH = lineHeight * length;
 
   const widths = lines.map((line) => {
     const { width } = ctx.measureText(line);
@@ -95,14 +95,14 @@ const drawRectText = (ctx, shape) => {
   });
 
   const x = startX + (rectW - textW) * 0.5;
-  let y = startY + (rectH - textH) * 0.5;
+  let y = startY + (rectH - textH) * 0.5 + asc;
 
   lines.forEach((line, index) => {
     const width = widths[index];
 
     ctx.fillText(line, x + (textW - width) * 0.5, y);
 
-    y += lineHeight * LINE_SPACE_MULTIPLIER;
+    y += lineHeight;
   });
 };
 
