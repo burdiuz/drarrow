@@ -158,17 +158,18 @@ document.querySelector('.info-btn').addEventListener('click', showInfo);
 
 window.addEventListener('resize', resize);
 window.addEventListener('keyup', (e) => {
-  switch (e.key) {
+  const { code, ctrlKey, metaKey, shiftKey } = e;
+  switch (code) {
     case 'Escape':
       hideModal({ forced: true });
       break;
-    case 'c':
-      if (e.ctrlKey || e.metaKey) {
+    case 'KeyC':
+      if (ctrlKey || metaKey) {
         copy();
       }
       break;
-    case 'x':
-      if (e.ctrlKey || e.metaKey) {
+    case 'KeyX':
+      if (ctrlKey || metaKey) {
         copy().then(() => {
           initState();
           saveStateToURL();
@@ -176,17 +177,17 @@ window.addEventListener('keyup', (e) => {
         });
       }
       break;
-    case 'z':
-      if (e.ctrlKey || e.metaKey) {
-        if (e.shiftKey) {
+    case 'KeyZ':
+      if (ctrlKey || metaKey) {
+        if (shiftKey) {
           redo();
         } else {
           undo();
         }
       }
       break;
-    case 'y':
-      if (e.ctrlKey || e.metaKey) {
+    case 'KeyY':
+      if (ctrlKey || metaKey) {
         redo();
       }
       break;
